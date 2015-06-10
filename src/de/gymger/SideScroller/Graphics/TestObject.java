@@ -29,9 +29,11 @@ public class TestObject {
 		0.5f, 1f
 	};
 	
+	double scalarX, scalarY;
+	
 	private static final boolean WIREFRAME = false;
 	
-	public TestObject(){
+	public TestObject(double x, double y){
 		VAO = GL30.glGenVertexArrays();
 		VBO = GL15.glGenBuffers();
 		EBO = GL15.glGenBuffers();
@@ -73,6 +75,8 @@ public class TestObject {
 		GL30.glBindVertexArray(0);
 		
 		uOffset = GL20.glGetUniformLocation(basicShaderProgram, "offset");
+		scalarX = x;
+		scalarY = y;
 	}
 	
 	
@@ -83,7 +87,7 @@ public class TestObject {
 		
 		GL20.glUseProgram(basicShaderProgram);
 		
-		GL20.glUniform3f(uOffset, (float)Math.sin(GLFW.glfwGetTime()) * 0.5f, (float)Math.cos(GLFW.glfwGetTime()) * 0.5f, 0);
+		GL20.glUniform3f(uOffset, (float)Math.sin(GLFW.glfwGetTime() * scalarX) * 0.5f, (float)Math.cos(GLFW.glfwGetTime() * scalarY) * 0.5f, 0);
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 		
