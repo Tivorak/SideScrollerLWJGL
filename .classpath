@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="C:/Users/Tivorak/workspace/SideScrollerLWJGL/lib/LWJGL/jar/lwjgl.jar" sourcepath="lib/LWJGL/src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SideScrollerLWJGL/lib/LWJGL/doc/javadoc.zip!/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="SideScrollerLWJGL/lib/LWJGL/native"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Tivorak/workspace/SideScrollerLWJGL/lib/Slick-UTIL/lwjgl_util.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
