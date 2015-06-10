@@ -3,11 +3,12 @@
 in vec3 passColor;
 in vec2 texCoord;
 
-uniform sampler2D myTexture;
+uniform sampler2D myTexture1;
+uniform sampler2D myTexture2;
 
 out vec4 color;
 
 void main()
 {
-    color = texture(myTexture, texCoord);
+    color = mix(texture(myTexture1, texCoord) * vec4(passColor, 1.0f), texture(myTexture2, texCoord), 0.2);
 }

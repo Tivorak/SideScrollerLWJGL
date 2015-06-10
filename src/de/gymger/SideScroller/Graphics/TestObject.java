@@ -6,15 +6,20 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import de.gymger.SideScroller.util.AssetManager;
 
 public class TestObject {
 
-	int VAO, VBO, EBO, uOffset, texID;
+	int VAO, VBO, EBO, uOffset, texIDWall, texIDSmiley;
 	
 	int basicShaderProgram = OpenGLHelper.createShaderProgram("vertex.glsl", "fragment.glsl");
 	
@@ -40,7 +45,8 @@ public class TestObject {
 		
 		vertices = BufferUtils.createByteBuffer(4 * 8 * Float.BYTES).asFloatBuffer();
 
-		texID = AssetManager.loadTexture("wall");
+		texIDWall = AssetManager.loadTexture("wall");
+		texIDSmiley = AssetManager.loadTexture("awesomeface");
 		
 		vertices.put(new float[]{
 				//POSITION		   //COLOR       //TEXTURE COORDS
@@ -84,12 +90,32 @@ public class TestObject {
 		if(WIREFRAME)
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
+		Matrix4f m4f = new Matrix4f();
+		
+		m4f.rotate((float) Math.toRadians(90), new Vector3f(0, 0, 1));
+		
+		m4f.translate(new Vector2f((float)Math.sin(GLFW.glfwGetTime() * scalarX) * 0.5f, (float)Math.cos(GLFW.glfwGetTime() * scalarY) * 0.5f));
+		
+		
+		FloatBuffer buf = BufferUtils.createFloatBuffer(4 * 4);
+		
+		m4f.store(buf);
+		
+		buf.flip();
 		
 		GL20.glUseProgram(basicShaderProgram);
 		
 		GL20.glUniform3f(uOffset, (float)Math.sin(GLFW.glfwGetTime() * scalarX) * 0.5f, (float)Math.cos(GLFW.glfwGetTime() * scalarY) * 0.5f, 0);
 		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
+		GL20.glUniformMatrix4fv(GL20.glGetUniformLocation(basicShaderProgram, "transform"), false, buf);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texIDWall);
+		GL20.glUniform1i(GL20.glGetUniformLocation(basicShaderProgram, "myTexture1"), 0);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texIDSmiley);
+		GL20.glUniform1i(GL20.glGetUniformLocation(basicShaderProgram, "myTexture2"), 1);
 		
 		GL30.glBindVertexArray(VAO);
 		{
@@ -98,6 +124,7 @@ public class TestObject {
 		GL30.glBindVertexArray(0);
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		
 		if(WIREFRAME)
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 	}
