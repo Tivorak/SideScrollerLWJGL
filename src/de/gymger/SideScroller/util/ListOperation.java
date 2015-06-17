@@ -1,4 +1,4 @@
-package de.gymger.SideScroller.util;
+package de.gymger.sidescroller.util;
 
 public class ListOperation<E> {
 

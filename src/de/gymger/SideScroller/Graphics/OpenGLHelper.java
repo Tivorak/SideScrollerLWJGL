@@ -1,4 +1,4 @@
-package de.gymger.SideScroller.Graphics;
+package de.gymger.sidescroller.graphics;
 
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwInit;
@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+
+import de.gymger.sidescroller.util.AssetManager;
 
 public class OpenGLHelper {
 
@@ -30,9 +32,13 @@ public class OpenGLHelper {
 		
 		int vertexShaderID, fragmentShaderID;
 		
+		vertexShaderLoc = vertexShaderLoc.replace('.', File.separatorChar) + ".glsl";
+		fragmentShaderLoc = fragmentShaderLoc.replace('.', File.separatorChar) + ".glsl";
+		
 		try {
 			StringBuilder sb = new StringBuilder();
-			for(String s : Files.readAllLines(new File("C:\\Users\\Tivorak\\workspace\\SideScrollerLWJGL\\shader\\" + vertexShaderLoc).toPath()))
+			String shaderBasePath = AssetManager.getBasePath() + File.separatorChar + ".." + File.separatorChar + "shader" + File.separatorChar;
+			for(String s : Files.readAllLines(new File(shaderBasePath + vertexShaderLoc).toPath()))
 				sb.append(s).append('\n');
 			
 			vertexShaderID = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
@@ -46,7 +52,7 @@ public class OpenGLHelper {
 			
 	        
 	        sb = new StringBuilder();
-			for(String s : Files.readAllLines(new File("C:\\Users\\Tivorak\\workspace\\SideScrollerLWJGL\\shader\\" + fragmentShaderLoc).toPath()))
+			for(String s : Files.readAllLines(new File(shaderBasePath + fragmentShaderLoc).toPath()))
 				sb.append(s).append('\n');
 			
 			fragmentShaderID = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);

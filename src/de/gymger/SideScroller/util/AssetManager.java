@@ -1,4 +1,4 @@
-package de.gymger.SideScroller.util;
+package de.gymger.sidescroller.util;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -76,5 +76,9 @@ public class AssetManager {
 	
 	public static void unloadTexture(int id){
 		GL11.glDeleteTextures(id);
+	}
+	
+	public static String getBasePath(){
+		return basePath;
 	}
 }

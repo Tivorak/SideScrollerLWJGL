@@ -1,24 +1,26 @@
-package de.gymger.SideScroller;
+package de.gymger.sidescroller;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL11;
 
-import de.gymger.SideScroller.Graphics.OpenGLTest;
-import de.gymger.SideScroller.util.ListOperation;
-import de.gymger.SideScroller.util.ListOperation.OperationType;
+import de.gymger.sidescroller.graphics.GraphicsManager;
+import de.gymger.sidescroller.util.ListOperation;
+import de.gymger.sidescroller.util.ListOperation.OperationType;
 
 public class Controller {
 
 	public static boolean running = false;
 	
-	private static List<Tickable> tickables = new LinkedList<>();
-	private static List<ListOperation<Tickable>> operationBuffer = new LinkedList<>();
+	private static List<ITickable> tickables = new LinkedList<>();
+	private static List<ListOperation<ITickable>> operationBuffer = new LinkedList<>();
 	
 	private static float currentTick;
 	
@@ -26,30 +28,29 @@ public class Controller {
 	
 	private static long baseTickLength = 33554432, tickLength = baseTickLength;
 	
-	private static Controller instance = new Controller();
+	static GLFWErrorCallback errorCallback;
+	static GLFWKeyCallback keyCallback;
+	static GLFWWindowSizeCallback windowSizeCallback;
 	
 	private Controller(){
 		
 	}
 	
-	public static Controller getInstance(){
-		return instance;
-	}
-	
-	public void init(){
-		GLFW.glfwSetKeyCallback(OpenGLTest.getInstance().getWindowHandle(), new GLFWKeyCallback(){
+	public static void init(){
+		GLFW.glfwSetKeyCallback(GraphicsManager.getWindowHandle(), keyCallback = new GLFWKeyCallback(){
 
 			@Override
 			public void invoke(long window, int key, int scancode, int action,
 					int mods) {
 				if(key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
-					GLFW.glfwSetWindowShouldClose(OpenGLTest.getInstance().getWindowHandle(), GL11.GL_TRUE);
+					GLFW.glfwSetWindowShouldClose(GraphicsManager.getWindowHandle(), GL11.GL_TRUE);
+				
 			}
 			
 		});
 		
 		
-		GLFW.glfwSetWindowSizeCallback(OpenGLTest.getInstance().getWindowHandle(),  new GLFWWindowSizeCallback(){
+		GLFW.glfwSetWindowSizeCallback(GraphicsManager.getWindowHandle(), windowSizeCallback = new GLFWWindowSizeCallback(){
 
 			@Override
 			public void invoke(long window, int width, int height) {
@@ -57,9 +58,11 @@ public class Controller {
 			}
 			
 		});
+		
+		GLFW.glfwSetErrorCallback(errorCallback = Callbacks.errorCallbackPrint(System.err));
 	}
 	
-	public void gameLoop(){
+	public static void gameLoop(){
 		if(running)
 			return;
 		
@@ -68,14 +71,18 @@ public class Controller {
 		long startOfTick;
 		
 		long d;
-		ListOperation<Tickable> o = null;
+		ListOperation<ITickable> o = null;
 		
 		while(running){
-			
+			GLFW.glfwPollEvents();
+			if(GLFW.glfwWindowShouldClose(GraphicsManager.getWindowHandle()) == GL11.GL_TRUE){
+				running = false;
+				break;
+			}
 			startOfTick = System.nanoTime();
 			
 			if(operationBuffer.size() > 0){
-				Iterator<ListOperation<Tickable>> i = operationBuffer.iterator();
+				Iterator<ListOperation<ITickable>> i = operationBuffer.iterator();
 				while(i.hasNext()){
 					o = i.next();
 					
@@ -91,7 +98,7 @@ public class Controller {
 				
 			}
 			
-			for(Tickable t : tickables)
+			for(ITickable t : tickables)
 				t.tick(Math.round(currentTick));
 			
 			currentTick += timeDilation;
@@ -104,23 +111,25 @@ public class Controller {
 				Thread.sleep((int)(d / 1000000), (int)(d % 1000000));
 			} catch (InterruptedException | IllegalArgumentException e) {}
 		}
+		
+		System.exit(0);
 	}
 	
-	public void addTickable(Tickable t){
+	public static void addTickable(ITickable t){
 		operationBuffer.add(new ListOperation<>(t, OperationType.ADD));
 	}
 	
-	public void removeTickable(Tickable t){
+	public static void removeTickable(ITickable t){
 		operationBuffer.add(new ListOperation<>(t, OperationType.REMOVE));
 	}
 	
-	public void setTimeDilation(float f){
+	public static void setTimeDilation(float f){
 		timeDilation = f;
 		
 		tickLength = Math.round(baseTickLength * timeDilation);
 	}
 
-	public void setRunning(boolean b) {
+	public static void setRunning(boolean b) {
 		running = false;
 	}
 }

@@ -1,6 +1,6 @@
-package de.gymger.SideScroller.util;
+package de.gymger.sidescroller.util;
 
-import de.gymger.SideScroller.util.ListOperation.OperationType;
+import de.gymger.sidescroller.util.ListOperation.OperationType;
 
 public class MapOperation {
 

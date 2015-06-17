@@ -10,5 +10,5 @@ out vec4 color;
 
 void main()
 {
-    color = mix(texture(myTexture1, texCoord) * vec4(passColor, 1.0f), texture(myTexture2, texCoord), 0.2);
+    color = mix(texture(myTexture1, texCoord), texture(myTexture2, texCoord), 0.2);
 }

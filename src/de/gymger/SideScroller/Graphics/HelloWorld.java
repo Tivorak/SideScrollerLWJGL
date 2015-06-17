@@ -1,4 +1,4 @@
-package de.gymger.SideScroller.Graphics;
+package de.gymger.sidescroller.graphics;
    
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
